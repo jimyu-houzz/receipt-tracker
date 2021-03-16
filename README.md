@@ -29,8 +29,8 @@
 * `GET /receipts` <br/>
     * Get all receipts based on username(based on session)
 
-* `POST /add` <br>
-    * Upload a receipt(tag is not required)
+* `POST /receipts` <br>
+    * Post a new receipt directly through request body(easier to test)
     ``` 
     {
         "receiptId": "87450",
@@ -39,6 +39,8 @@
         "total": 50.60
     }
     ```
+* `POST /receipts/upload` <br/>
+    * Upload .txt file containing receipt information. (Request must be "form-data", with key name as "upload".) Can also provide key "tag" with its value(ex: "Food") while sending post request
 
 * `GET /receipts/id/:id` <br/>
     * Get specific receipt based on receiptId

@@ -14,8 +14,8 @@ router.route('/').get((req, res) => {
         .catch(err => res.status(400).json('Error: ', err));
 });
 
-/* add new receipts */
-router.route('/add').post((req, res) => {
+/* post new receipts directly through request body(easier to test) */
+router.route('/').post((req, res) => {
     const receiptId = req.body.receiptId;
     const date = req.body.date;
     const tag = req.body.tag;
@@ -60,30 +60,26 @@ router.route('/upload').post(upload.single('upload'),(req, res, next) => {
     console.log('Filename: ', req.file.filename);
     const fileName = req.file.filename;
     try{
+        // get an array of strings from each line of the txt file
         array = parseFileToArray('./uploads/'+ fileName);
-        console.log('Array: ', array);
         
         setTimeout(() => {
-            console.log('Array in timeout: ', array);
-            console.log('Length of array: ', array.length);
+            // console.log(array);
             receiptObject = parseArrayToObject(array, receiptObject);
-            console.log("Temp", receiptObject);
+            console.log("Receipt Object: ", receiptObject);
             
+
             const username = req.session.username;
+            const tag = req.body.tag;
             if(!username){
                 res.send('Please login first');
                 return;
             }
-            const receiptId = receiptObject['receiptId'];
-            const tag = receiptObject['tag'];
-            const date = receiptObject['date'];
-            const total = receiptObject['total'];
             
-            console.log('Constants: ', receiptId, tag, date, total, username);
-
+            // tag would be from the request
             const newReceipt = new Receipt({
                 receiptId: receiptObject.receiptId,
-                tag: receiptObject.tag,
+                tag: tag,
                 date: receiptObject.date,
                 total: parseInt(receiptObject.total),
                 username: username,
@@ -91,8 +87,8 @@ router.route('/upload').post(upload.single('upload'),(req, res, next) => {
 
             console.log('new receipt: ', newReceipt);
             newReceipt.save()
-                .then(() => res.send(`File Uploaded and Receipt added, receipt id: ${receiptId}`))
-                .catch(err => res.status(600).json('Error: ', err));
+                .then(() => res.send(`File Uploaded and Receipt added`))
+                .catch(err => res.status(500).json('Error: ', err));
 
         },1000)
         
