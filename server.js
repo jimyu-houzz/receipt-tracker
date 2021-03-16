@@ -66,8 +66,8 @@ app.use(session({
 }));
 
 // import the routers
-const receiptRouter = require('./routes/receipts');
-const userRouter = require('./routes/users');
+const receiptRouter = require('./src/routes/receipts');
+const userRouter = require('./src/routes/users');
 
 app.use('/receipts', receiptRouter);
 app.use('/users', userRouter);

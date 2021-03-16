@@ -10,7 +10,7 @@ const receiptSchema = new Schema({
     total: { type: Number, required: true },
     username: { type: String, required: true },
 }, {
-    timestamp: true,
+    timestamps: true,
 });
 
 const Receipt = mongoose.model('Receipt', receiptSchema);
