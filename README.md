@@ -1,1 +1,4 @@
-# receipt-tracker
+# Receipt Tracker
+`npm install` <br/>
+`npm start`<br/>
+
