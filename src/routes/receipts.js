@@ -1,5 +1,9 @@
 const router = require('express').Router();
 const Receipt = require('../models/receipt.model');
+// modules for file upload
+const multer = require('multer');
+const upload = multer({ dest: './uploads/'});
+const { parseFileToArray, parseArrayToObject } = require('../utils');
 
 /* get all receipts from user */
 router.route('/').get((req, res) => {
@@ -10,8 +14,8 @@ router.route('/').get((req, res) => {
         .catch(err => res.status(400).json('Error: ', err));
 });
 
-/* add new receipts */
-router.route('/add').post((req, res) => {
+/* post new receipts directly through request body(easier to test) */
+router.route('/').post((req, res) => {
     const receiptId = req.body.receiptId;
     const date = req.body.date;
     const tag = req.body.tag;
@@ -38,6 +42,62 @@ router.route('/add').post((req, res) => {
     newReceipt.save()
         .then(() => res.send(`Receipt added, receipt id: ${receiptId}`))
         .catch(err => res.status(400).json('Error: ', err));
+})
+
+/* upload receipt */
+// 'upload' is the key of the form data from POST request
+router.route('/upload').post(upload.single('upload'),(req, res, next) => {
+    // console.log(req.body);
+    let array = []
+    let receiptObject = {
+        receiptId:"",
+        date:"",
+        tag:"",
+        total:"",
+        username:""
+    }
+    console.log(req.file);
+    console.log('Filename: ', req.file.filename);
+    const fileName = req.file.filename;
+    try{
+        // get an array of strings from each line of the txt file
+        array = parseFileToArray('./uploads/'+ fileName);
+        
+        setTimeout(() => {
+            // console.log(array);
+            receiptObject = parseArrayToObject(array, receiptObject);
+            console.log("Receipt Object: ", receiptObject);
+            
+
+            const username = req.session.username;
+            const tag = req.body.tag;
+            if(!username){
+                res.send('Please login first');
+                return;
+            }
+            
+            // tag would be from the request
+            const newReceipt = new Receipt({
+                receiptId: receiptObject.receiptId,
+                tag: tag,
+                date: receiptObject.date,
+                total: parseInt(receiptObject.total),
+                username: username,
+            });
+
+            console.log('new receipt: ', newReceipt);
+            newReceipt.save()
+                .then(() => res.send(`File Uploaded and Receipt added`))
+                .catch(err => res.status(500).json('Error: ', err));
+
+        },1000)
+        
+        // res.send('file uploaded');
+    }catch(err){
+        res.status(500).json('Error: ', err);
+    }
+
+    
 })
 
 /* get specific receipt */
