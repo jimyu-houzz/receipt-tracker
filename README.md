@@ -1,6 +1,22 @@
 # Receipt Tracker
+Create a `.env` file in root. <br/>
+Sample of .env below. Repalce "user", "password" with your own mongodb atlas username and password
+`ATLAS_URI="mongodb+srv://<username>:<password>@cluster0.f59dr.mongodb.net/receipt-tracker?retryWrites=true&w=majority"` <br/>
+<br/>
+Run: <br/>
 `npm install` <br/>
-`npm start`<br/>
+`npm start` <br/>
+
+<br/>
+<br/>
+
+## Test Flow <br/>
+* POST users/login or users/signup
+* POST receipts/upload to upload receipts into db
+* GET receipts to check all receipts uploaded or stored in db
+* POST receipts/id/:id to update, delete tags
+* GET receipts/tag/:tag to fetch receipts based on tags
+
 
 <br/>
 
